@@ -43,7 +43,6 @@ def edit_dialog(dialog, connections, connection, is_add):
         connection = {"name": "CUSTOM", "host": "",  "port": "22", "user": "", "passwd": "", "ogin": "", "assword": ""}
 
     field_order = ["name", "host", "port", "user", "ogin", "assword"]
-    elements = []
 
     is_retry = True
     while True == is_retry:
@@ -51,6 +50,7 @@ def edit_dialog(dialog, connections, connection, is_add):
         old_name = connection["name"]
         connection = copy.copy(connection)
 
+        elements = []
         for i in xrange(len(field_order)):
             elements.append((field_order[i], i + 1, 1, connection[field_order[i]], i + 1, 15, 50, 50))
         title = "A D D - U S E R" if is_add else "E D I T - U S E R"
@@ -80,7 +80,7 @@ def edit_dialog(dialog, connections, connection, is_add):
                 # 更新时间戳
                 if "timestamp" not in connection:
                     connection["timestamp"] = 0
-                connection["timestmap"] = time.mktime(datetime.datetime.now().timetuple())
+                connection["timestamp"] = time.mktime(datetime.datetime.now().timetuple())
 
                 connections[connection["name"]] = connection
                 if False == is_add and old_name != connection["name"]:
@@ -126,13 +126,14 @@ def main_dialog(connections):
         for name in names:
             choices.append((name, "%s@%s" % (connections[name]["user"], connections[name]["host"])))
 
+        dialog.clear()
         code, tag = dialog.menu("connections", choices=([("", "")] if len(choices) <= 0 else choices),
                                 extra_button=True, extra_label="Add", ok_label="Edit", cancel_label="Exit")
         # Edit
         if Dialog.OK == code:
-            print tag
             if tag in connections:
                 connection = connections[tag]
+                print connection
             connections = edit_dialog(dialog, connections, connection, False)
         # Add
         elif Dialog.EXTRA == code:
